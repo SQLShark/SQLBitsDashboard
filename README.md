@@ -62,6 +62,63 @@ for x in range(0, y):
 cnxn.commit()
 ```
 
+There is a table and some a view required for the dashboard: 
+
+```
+CREATE TABLE dbo.sqlbitssessions
+(
+	Id INT NOT NULL IDENTITY, 
+	Title VARCHAR(1000),
+	Speaker VARCHAR(1000),
+	Topic VARCHAR(1000),
+	Abstract VARCHAR(8000)
+)
+
+DROP VIEW IF EXISTS dbo.sqlbits;
+GO
+
+CREATE VIEW dbo.sqlbits as
+SELECT
+    Id
+  , Title
+  , Speaker
+  , UPPER(RTRIM(LEFT(Topic,3))) AS Topic
+  , CONVERT(INT, RIGHT(Topic, 3)) AS Level
+  , Abstract
+  , LEN(Abstract) [Abstract Length]
+  , LEN(Abstract) - LEN(REPLACE(Abstract, ' ', '')) +1 Words
+  , CASE WHEN PATINDEX('%Kubernetes%', Abstract) > 0 THEN 1 ELSE 0 END AS [Kubernetes]
+  , CASE WHEN PATINDEX('%2019%', Abstract) > 0 THEN 1 ELSE 0 END AS [2019]
+  , CASE WHEN PATINDEX('%Machine Learning%', Abstract) > 0 THEN 1 ELSE 0 END AS [Machine Learning]
+  , CASE WHEN PATINDEX('%Python%', Abstract) > 0 THEN 1 ELSE 0 END AS [Python]
+  , CASE WHEN PATINDEX('%Databricks%', Abstract) > 0 THEN 1 ELSE 0 END AS [Databricks]
+  , CASE WHEN PATINDEX('%Cosmosdb%', Abstract) > 0 THEN 1 ELSE 0 END AS [Cosmosdb]
+  , CASE WHEN PATINDEX('%Graph%', Abstract) > 0 THEN 1 ELSE 0 END AS [Graph]
+  , CASE WHEN PATINDEX('%Stream Analytics%', Abstract) > 0 THEN 1 ELSE 0 END AS [Stream Analytics]
+  , CASE WHEN PATINDEX('%Power bi%', Abstract) > 0 THEN 1 ELSE 0 END AS [Power bi]
+  , CASE WHEN PATINDEX('%Docker%', Abstract) > 0 THEN 1 ELSE 0 END AS [Docker]
+  , CASE WHEN PATINDEX('%Data Lake%', Abstract) > 0 THEN 1 ELSE 0 END AS [Data Lake]
+  , CASE WHEN PATINDEX('%HDInsight%', Abstract) > 0 THEN 1 ELSE 0 END AS [HDInsight]
+  , CASE WHEN PATINDEX('%Spark%', Abstract) > 0 THEN 1 ELSE 0 END AS [Spark]
+  , CASE WHEN PATINDEX('%Apache%', Abstract) > 0 THEN 1 ELSE 0 END AS [Apache]
+  , CASE WHEN PATINDEX('%SSIS%', Abstract) > 0 THEN 1 ELSE 0 END AS [SSIS]
+  , CASE WHEN PATINDEX('%SSRS%', Abstract) > 0 THEN 1 ELSE 0 END AS [SSRS]
+  , CASE WHEN PATINDEX('%Master Data%', Abstract) > 0 THEN 1 ELSE 0 END AS [Master Data]
+  , CASE WHEN PATINDEX('%2008%', Abstract) > 0 THEN 1 ELSE 0 END AS [2008]
+  , CASE WHEN PATINDEX('%dba%', Abstract) > 0 THEN 1 ELSE 0 END AS [DBA]
+  , CASE WHEN PATINDEX('%dbatools%', Abstract) > 0 THEN 1 ELSE 0 END AS [dbatools]
+  , CASE WHEN PATINDEX('%powershell%', Abstract) > 0 THEN 1 ELSE 0 END AS [powershell]
+FROM
+    dbo.sqlbitssessions
+WHERE 
+	Abstract LIKE '%%'
+ORDER BY 
+	Speaker
+;
+
+
+```
+
 Then we can use the PowerBI dashboard to point at it. 
 
 Thanks for reading. 
